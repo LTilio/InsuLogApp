@@ -3,6 +3,8 @@ import { Feather } from "@expo/vector-icons";
 import { HomeScreen } from "../screens/HomeScreen";
 import { InfoScreen } from "../screens/InfoScreen";
 import { LogoutScreen } from "../screens/LogoutScreen";
+import { Keyboard } from "react-native";
+import { useEffect, useState } from "react";
 
 export type RootTabParamsList = {
   TabHomeScreen: undefined;
@@ -14,6 +16,22 @@ export type RootTabParamsList = {
 const tab = createBottomTabNavigator<RootTabParamsList>();
 
 export function TabRoutes() {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setIsKeyboardVisible(false);
+    });
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
   return (
     <tab.Navigator
       initialRouteName="TabHomeScreen"
@@ -21,6 +39,9 @@ export function TabRoutes() {
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
+          display: isKeyboardVisible ? "none" : "flex",
+          position: "absolute", // Fixa a TabBar na parte inferior
+          bottom: 0, // Garantir que a TabBar fique fixa na parte inferior
           height: 80,
           borderTopWidth: 0,
           elevation: 0,

@@ -32,7 +32,7 @@ const insertReducer = (state: State, action: Action) => {
 };
 
 export const useInsertDocument = (docCollection: string) => {
-  const [response, dispatch] = useReducer(insertReducer, initialState);
+  const [state, dispatch] = useReducer(insertReducer, initialState);
 
   const insertDocument = async (doc: GlucoseLog) => {
     dispatch({ type: "LOADING" });
@@ -45,5 +45,5 @@ export const useInsertDocument = (docCollection: string) => {
     }
   };
 
-  return { insertDocument, response };
+  return { insertDocument, state };
 };
