@@ -50,11 +50,11 @@ export const useAuth = () => {
       dispatch({ type: "LOADING" });
 
       try {
-        const userData = await AsyncStorage.getItem("user");
+        const userData = await AsyncStorage.getItem("@user");
         if (userData) {
-          const user = JSON.parse(userData);
+          const {email, password} = JSON.parse(userData);
           await minLoaderTime(1500);
-          dispatch({ type: "SUCCESS", payload: user });
+          await signIn(email, password);
         } else {
           dispatch({ type: "LOGOUT" });
         }
@@ -67,9 +67,9 @@ export const useAuth = () => {
   }, []);
 
   // Função para salvar o usuário no AsyncStorage
-  const saveUserToStorage = async (user: User) => { // Alterado para o tipo correto
+  const saveUserToStorage = async (email: string, password: string) => { // Alterado para o tipo correto
     try {
-      await AsyncStorage.setItem("user", JSON.stringify(user));
+      await AsyncStorage.setItem("@user", JSON.stringify({ email, password }));
     } catch (error) {
       console.log("Erro ao salvar dados do usuário:", error);
     }
@@ -78,7 +78,7 @@ export const useAuth = () => {
   // Função para remover o usuário do AsyncStorage
   const removeUserFromStorage = async () => {
     try {
-      await AsyncStorage.removeItem("user");
+      await AsyncStorage.removeItem("@user");
     } catch (error) {
       console.log("Erro ao remover dados do usuário:", error);
     }
@@ -95,7 +95,7 @@ export const useAuth = () => {
       await minLoaderTime(1500);
 
       dispatch({ type: "SUCCESS", payload: userCredential.user });
-      await saveUserToStorage(userCredential.user);
+      await saveUserToStorage(user.email, user.password);
     } catch (error: any) {
       console.log("Error during sign up:", error);
       dispatch({ type: "ERROR", payload: `Erro no cadastro: ${error.message}` });
@@ -111,7 +111,7 @@ export const useAuth = () => {
 
       await minLoaderTime(1500);
       dispatch({ type: "SUCCESS", payload: userCredential.user });
-      await saveUserToStorage(userCredential.user);
+      await saveUserToStorage(email, password);
     } catch (error: any) {
       dispatch({ type: "ERROR", payload: `Erro no login: ${error.message}` });
     }

@@ -30,6 +30,7 @@ export function HomeScreen() {
       <StatusBar barStyle="light-content" backgroundColor="purple" />
       <View style={styles.containerAfericao}>
         <View style={styles.textRow}>
+          <Text style={styles.textInfoA}>{user?.displayName}</Text>
           <Text style={styles.textInfoA}>Última aferição:</Text>
           <Text style={styles.textDate}>28/10/2024 - 19:30</Text>
         </View>
