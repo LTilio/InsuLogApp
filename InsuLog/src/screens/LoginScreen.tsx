@@ -26,8 +26,8 @@ export function LoginScreen() {
       <Text style={styles.title}>InsuLog</Text>
       <InputComponent placeHolder="Email" value={email} inputtype={false} handleonChange={setEmail} />
       <InputComponent placeHolder="Senha" value={password} inputtype={true} handleonChange={setPassword} />
-      <ButtonComponent title="Entrar" handleOnChange={handleLogin} />
-      <ButtonComponent title="Faça seu cadastro" handleOnChange={handleSignUp} />
+      <ButtonComponent title="Entrar" handleOnPress={handleLogin} />
+      <ButtonComponent title="Faça seu cadastro" handleOnPress={handleSignUp} />
     </View>
   );
 }

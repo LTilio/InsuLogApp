@@ -34,8 +34,12 @@ const insertReducer = (state: State, action: Action) => {
 export const useInsertDocument = (docCollection: string) => {
   const [state, dispatch] = useReducer(insertReducer, initialState);
 
+  const minLoaderTime = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
   const insertDocument = async (doc: GlucoseLog) => {
     dispatch({ type: "LOADING" });
+    await minLoaderTime(1000);
+
     try {
       const newDocument = { ...doc, createdAt: Timestamp.now() };
       const insertedDocument = await addDoc(collection(db, docCollection), newDocument);

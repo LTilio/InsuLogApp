@@ -14,28 +14,63 @@ import { useAuthContext } from "../context/AuthContext";
 import { InputComponent } from "../components/InputComponent";
 import { useState, useEffect, useRef } from "react";
 import { ButtonComponent } from "../components/ButtonComponent";
+import { useInsertDocument } from "../hooks/useInsertDoument";
+import { Loader } from "../components/Loader";
+import { ModalComponent } from "../components/ModalComponent";
+import { useNavigation } from "@react-navigation/native";
 
 export function HomeScreen() {
   const { user } = useAuthContext();
   const [glucose, setGlucose] = useState<string>("");
   const [insulinUsed, setInsulinUsed] = useState<string>("");
   const [insulinAmount, setInsulinAmount] = useState<string>("");
+  const [modalState, setModalState] = useState<boolean>(false);
+  const { insertDocument, state } = useInsertDocument("glucoseLog");
+  const nav = useNavigation();
 
   const handleSubmit = async () => {
-    console.log("foi");
+    if (!glucose || !insulinAmount || !insulinUsed.trim()) {
+      console.log("Preencha todos os campos corretamente.");
+      return;
+    }
+    if (!user?.displayName) {
+      console.error("Erro: Nome do usuário não encontrado!");
+    }
+
+    if (user) {
+      await insertDocument({
+        glucose: glucose,
+        insulinUsed: insulinUsed,
+        insulinAmount: insulinAmount,
+        userId: user?.uid,
+        userName: user?.displayName ?? "sem nome do usuário",
+      });
+      console.log("inserted");
+      setModalState(true);
+    } else {
+      console.log("Você precisa estar logado para aferir o nível de glicose.");
+    }
+  };
+
+  const handleHome = () => {
+    setGlucose("");
+    setInsulinAmount("");
+    setInsulinUsed("");
+    setModalState(false);
+    nav.navigate("TabInfo");
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {modalState && <ModalComponent handleModal={handleHome} title="Informações registradas" modal={modalState} />}
+      {state.loading && <Loader />}
       <StatusBar barStyle="light-content" backgroundColor="purple" />
       <View style={styles.containerAfericao}>
         <View style={styles.textRow}>
-          <Text style={styles.textInfoA}>{user?.displayName}</Text>
           <Text style={styles.textInfoA}>Última aferição:</Text>
           <Text style={styles.textDate}>28/10/2024 - 19:30</Text>
         </View>
       </View>
-
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView>
           <View style={styles.formContainer}>
@@ -43,7 +78,7 @@ export function HomeScreen() {
             <InputComponent
               placeHolder="Valor da Glicose"
               value={glucose}
-              handleonChange={setGlucose}
+              handleonChange={(v) => setGlucose(v)}
               inputtype={false}
               keyboardType="numeric"
             />
@@ -55,12 +90,12 @@ export function HomeScreen() {
             <InputComponent
               placeHolder="Quantidade de Insulina"
               value={insulinAmount}
-              handleonChange={setInsulinAmount}
+              handleonChange={(v) => setInsulinAmount(v)}
               inputtype={false}
               keyboardType="numeric"
             />
 
-            <ButtonComponent title="Registrar" handleOnChange={handleSubmit} />
+            <ButtonComponent title="Registrar" handleOnPress={handleSubmit} disable={state.loading} />
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>

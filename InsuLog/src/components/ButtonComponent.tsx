@@ -2,19 +2,19 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface PropsComponent {
     title: string;
-    handleOnChange: () => void;
+    handleOnPress: () => void;
     disable?: boolean;
   }
   
   export function ButtonComponent({
-    handleOnChange,
+    handleOnPress,
     title,
     disable,
   }: PropsComponent) {
     return (
       <View style={styles.container}>
         <TouchableOpacity
-          onPress={handleOnChange}
+          onPress={handleOnPress}
           style={styles.button}
           disabled={disable}
         >

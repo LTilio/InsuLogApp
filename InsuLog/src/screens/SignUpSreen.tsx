@@ -44,7 +44,7 @@ export function SignUpScreen() {
           placeHolder="Informe sua senha"
           inputtype={true}
         />
-        <ButtonComponent handleOnChange={handleSignUp} title="Cadastrar" />
+        <ButtonComponent handleOnPress={handleSignUp} title="Cadastrar" />
       </View>
     </TouchableWithoutFeedback>
   );

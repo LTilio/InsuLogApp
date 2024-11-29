@@ -22,7 +22,7 @@ export function InputComponent({
   return (
     <>
       <TextInput
-      ref={inputRef}
+        ref={inputRef}
         style={styles.input}
         onChangeText={handleonChange}
         secureTextEntry={inputtype}

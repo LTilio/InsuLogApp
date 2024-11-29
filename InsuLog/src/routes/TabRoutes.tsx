@@ -40,11 +40,12 @@ export function TabRoutes() {
         tabBarShowLabel: false,
         tabBarStyle: {
           display: isKeyboardVisible ? "none" : "flex",
-          position: "absolute", // Fixa a TabBar na parte inferior
-          bottom: 0, // Garantir que a TabBar fique fixa na parte inferior
+          // position: "absolute", // Fixa a TabBar na parte inferior
+          // bottom: 0, // Garantir que a TabBar fique fixa na parte inferior
           height: 80,
           borderTopWidth: 0,
           elevation: 0,
+          zIndex: 1,
         },
         tabBarItemStyle: {
           justifyContent: "center",

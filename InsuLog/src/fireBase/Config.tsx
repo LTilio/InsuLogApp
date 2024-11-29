@@ -4,7 +4,8 @@ import { API_KEY, APP_ID, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SEN
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: process.env.EXPO_PUBLIC_API_KEY,
+  // apiKey: process.env.EXPO_PUBLIC_API_KEY,
+  apiKey: API_KEY,
   authDomain: AUTH_DOMAIN,
   projectId: PROJECT_ID,
   storageBucket: STORAGE_BUCKET,
