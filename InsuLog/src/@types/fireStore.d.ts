@@ -1,9 +1,9 @@
 export interface GlucoseLog {
   userName: string;
   createdAt?: Timestamp; 
-  glucose: string;
+  glucose: number;
   insulinUsed: string;
-  insulinAmount: string;
+  insulinAmount: number;
   userId: string;
 }
 
