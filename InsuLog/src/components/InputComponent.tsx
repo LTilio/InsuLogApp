@@ -37,16 +37,14 @@ export function InputComponent({
 
 export const styles = StyleSheet.create({
   input: {
-    alignItems: "center",
-    width: "95%",
-    height: 60,
-    backgroundColor: "#fff",
-    borderRadius: 50,
-    borderColor: "#ccc",
+    width: "90%",
+    height: 55,
+    borderRadius: 10,
     borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    paddingLeft: 20,
-    fontSize: 15,
+    borderColor: "#ccc",
+    paddingHorizontal: 15,
+    backgroundColor: "#f9f9f9",
+    marginBottom: 15,
+    fontSize: 16,
   },
 });

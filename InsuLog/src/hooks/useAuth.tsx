@@ -1,20 +1,25 @@
-
-import { FirebaseAuthTypes } from '@react-native-firebase/auth'; // Importação para o tipo User no React Native
+import { FirebaseAuthTypes } from "@react-native-firebase/auth"; // Importação para o tipo User no React Native
 import { useEffect, useReducer } from "react";
 import { auth } from "../fireBase/Config"; // Importação correta do auth
 import { AppUser } from "../@types/fireStore"; // Tipagem para o usuário
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, User } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+  User,
+} from "firebase/auth";
 
 interface AuthState {
-  user: User | null; 
+  user: User | null;
   loading: boolean;
   error: string | null;
 }
 
 type AuthAction =
   | { type: "LOADING" }
-  | { type: "SUCCESS"; payload: User } 
+  | { type: "SUCCESS"; payload: User }
   | { type: "ERROR"; payload: string }
   | { type: "LOGOUT" };
 
@@ -52,7 +57,7 @@ export const useAuth = () => {
       try {
         const userData = await AsyncStorage.getItem("@user");
         if (userData) {
-          const {email, password} = JSON.parse(userData);
+          const { email, password } = JSON.parse(userData);
           await minLoaderTime(1500);
           await signIn(email, password);
         } else {
@@ -67,7 +72,8 @@ export const useAuth = () => {
   }, []);
 
   // Função para salvar o usuário no AsyncStorage
-  const saveUserToStorage = async (email: string, password: string) => { // Alterado para o tipo correto
+  const saveUserToStorage = async (email: string, password: string) => {
+    // Alterado para o tipo correto
     try {
       await AsyncStorage.setItem("@user", JSON.stringify({ email, password }));
     } catch (error) {
@@ -113,7 +119,18 @@ export const useAuth = () => {
       dispatch({ type: "SUCCESS", payload: userCredential.user });
       await saveUserToStorage(email, password);
     } catch (error: any) {
-      dispatch({ type: "ERROR", payload: `Erro no login: ${error.message}` });
+      console.log(error);
+      let errorMessage = "Ocorreu um erro. Tente novamente.";
+
+      if (error.code === "auth/invalid-email" || error.code === "auth/user-not-found") {
+        errorMessage = "Email não encontrado ou inválido.";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = "Senha incorreta.";
+      } else if (error.code === "auth/invalid-credential") {
+        errorMessage = "Credenciais inválidas.";
+      }
+
+      dispatch({ type: "ERROR", payload: errorMessage });
     }
   };
 
@@ -122,10 +139,14 @@ export const useAuth = () => {
     dispatch({ type: "LOADING" });
 
     try {
-      await minLoaderTime(1500);
-      await signOut(auth);
-      dispatch({ type: "LOGOUT" });
-      await removeUserFromStorage();
+      if (auth.currentUser) {
+        await minLoaderTime(1500);
+        await signOut(auth); // Realiza o logout do Firebase
+        dispatch({ type: "LOGOUT" });
+        await removeUserFromStorage();
+      } else {
+        dispatch({ type: "LOGOUT" });
+      }
     } catch (error: any) {
       dispatch({ type: "ERROR", payload: `Erro ao deslogar: ${error.message}` });
     }

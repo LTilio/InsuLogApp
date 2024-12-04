@@ -12,18 +12,22 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../fireBase/Config";
+import { useAuth } from "./useAuth";
+import { useAuthContext } from "../context/AuthContext";
 
 export const useFetchLatestDoc = (docCollection: string, userId: string) => {
   const [document, setDocument] = useState<GlucoseLog | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const{user}= useAuthContext();
 
   useEffect(() => {
     // Evitar execução se userId não estiver disponível
     if (!userId) return;
-
+    if (!user) return;
     // Função para carregar o documento mais recente
     const loadLatestDoc = () => {
+      
       const docQuery = query(
         collection(db, docCollection),
         where("userId", "==", userId),

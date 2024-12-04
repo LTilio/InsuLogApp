@@ -20,31 +20,41 @@ export function SignUpScreen() {
   const handleSignUp = async () => {
     const user: AppUser = { email, password, displayName };
     await signUp(user); // Chama a função de cadastro
-   
   };
 
-  if(loading){
+  const handleLoginScreen = async () => {
+    nav.goBack();
+  };
+
+  if (loading) {
     return <Loader />;
   }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <Text style={styles.title}>CADASTRO</Text>
-        <InputComponent
-          handleonChange={setDisplayName}
-          value={displayName}
-          placeHolder="Informe seu nome"
-          inputtype={false}
-        />
-        <InputComponent handleonChange={setEmail} value={email} placeHolder="Informe seu email" inputtype={false} />
-        <InputComponent
-          handleonChange={setPassword}
-          value={password}
-          placeHolder="Informe sua senha"
-          inputtype={true}
-        />
-        <ButtonComponent handleOnPress={handleSignUp} title="Cadastrar" />
+      <View style={styles.outerContainer}>
+        <View style={styles.container}>
+          <Text style={styles.title}>CADASTRO</Text>
+          <Text style={styles.label}>Nome de exibição:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Informe seu nome"
+            value={displayName}
+            onChangeText={setDisplayName}
+          />
+          <Text style={styles.label}>Email: </Text>
+          <TextInput style={styles.input} onChangeText={setEmail} value={email} placeholder="Informe seu email" />
+          <Text style={styles.label}>Senha: </Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setPassword}
+            value={password}
+            placeholder="Informe sua senha"
+            secureTextEntry
+          />
+          <ButtonComponent handleOnPress={handleSignUp} title="Cadastrar"/>
+          <ButtonComponent handleOnPress={handleLoginScreen} title="Volta" />
+        </View>
       </View>
     </TouchableWithoutFeedback>
   );
@@ -53,25 +63,48 @@ export function SignUpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    maxHeight: "65%",
+    width: "95%",
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
+    margin: 10,
+    padding: 10,
+    borderRadius: 15,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
+  outerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0", // Cor de fundo opcional
+  },
+
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 50,
+    marginBottom: 20,
+  },
+  label: {
+    alignSelf: "flex-start",
+    marginLeft: "8%",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
   },
   input: {
-    width: "100%",
-    height: 40,
-    borderColor: "#ccc",
+    width: "90%",
+    height: 55,
+    borderRadius: 10,
     borderWidth: 1,
-    marginBottom: 12,
-    paddingLeft: 8,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 12,
+    borderColor: "#ccc",
+    paddingHorizontal: 15,
+    backgroundColor: "#f9f9f9",
+    marginBottom: 15,
+    fontSize: 16,
   },
 });

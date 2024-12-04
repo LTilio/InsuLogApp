@@ -1,19 +1,17 @@
 import { Keyboard, SafeAreaView, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import { useAuthContext } from "../context/AuthContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useInsertDocument } from "../hooks/useInsertDoument";
 import { Loader } from "../components/Loader";
 import { ModalComponent } from "../components/ModalComponent";
 import { useNavigation } from "@react-navigation/native";
 import { GlucoseForm } from "../components/GlucoseForm";
 import { CardLatestRegister } from "../components/CardLatestRegister";
-import { useFetchLatestDoc } from "../hooks/useFetchDocument";
 
 export function HomeScreen() {
   const { user } = useAuthContext();
   const [modalState, setModalState] = useState<boolean>(false);
   const { insertDocument, state } = useInsertDocument("glucoseLog");
-  // const [refreshKey, setRefreshKey] = useState<number>(0);
   const nav = useNavigation();
 
   const handleSubmit = async (
@@ -35,12 +33,8 @@ export function HomeScreen() {
         userId: user?.uid,
         userName: user?.displayName ?? "sem nome do usuário",
       });
-      console.log("Doc inserted");
-      setModalState(true);
       resetForm();
-
-      // setRefreshKey((prev) => prev + 1);
-      // key={refreshKey}
+      setModalState(true);
     } else {
       setModalState(true);
       resetForm();

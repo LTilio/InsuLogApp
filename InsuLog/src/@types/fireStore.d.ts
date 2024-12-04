@@ -1,4 +1,5 @@
 export interface GlucoseLog {
+  uid?: string,
   userName: string;
   createdAt?: Timestamp; 
   glucose: number;
