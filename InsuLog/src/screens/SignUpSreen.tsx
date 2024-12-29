@@ -1,7 +1,19 @@
 import { useState } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import { AppUser } from "../@types/fireStore";
-import { Button, Keyboard, StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Button,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { API_KEY, AUTH_DOMAIN } from "@env";
 import { InputComponent } from "../components/InputComponent";
 import { ButtonComponent } from "../components/ButtonComponent";
@@ -14,10 +26,23 @@ export function SignUpScreen() {
   const [displayName, setDisplayName] = useState(""); // Nome de exibição
   const [email, setEmail] = useState(""); // Email
   const [password, setPassword] = useState(""); // Senha
+  const [inputError, setInputError] = useState(""); // Novo estado para erros personalizados
 
   const nav = useNavigation();
 
   const handleSignUp = async () => {
+    setInputError(""); // Reseta o erro
+
+    if (!displayName || !email || !password) {
+      setInputError("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setInputError("Por favor, insira um email válido.");
+      return;
+    }
+
     const user: AppUser = { email, password, displayName };
     await signUp(user); // Chama a função de cadastro
   };
@@ -26,85 +51,61 @@ export function SignUpScreen() {
     nav.goBack();
   };
 
-  if (loading) {
-    return <Loader />;
-  }
-
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.outerContainer}>
+    <KeyboardAvoidingView style={styles.outerContainer} behavior="padding">
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           <Text style={styles.title}>CADASTRO</Text>
-          <Text style={styles.label}>Nome de exibição:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Informe seu nome"
+          <InputComponent
+            placeHolder="Nome de exibição"
             value={displayName}
-            onChangeText={setDisplayName}
+            inputtype={false}
+            handleonChange={setDisplayName}
           />
-          <Text style={styles.label}>Email: </Text>
-          <TextInput style={styles.input} onChangeText={setEmail} value={email} placeholder="Informe seu email" />
-          <Text style={styles.label}>Senha: </Text>
-          <TextInput
-            style={styles.input}
-            onChangeText={setPassword}
-            value={password}
-            placeholder="Informe sua senha"
-            secureTextEntry
-          />
-          <ButtonComponent handleOnPress={handleSignUp} title="Cadastrar"/>
-          <ButtonComponent handleOnPress={handleLoginScreen} title="Volta" />
+          <InputComponent placeHolder="Email" value={email} inputtype={false} handleonChange={setEmail} />
+          <InputComponent placeHolder="Senha" value={password} inputtype={true} handleonChange={setPassword} />
+          {(inputError || error) && <Text style={styles.errorText}>{inputError || error}</Text>}
+          {loading && <Loader />}
+          <ButtonComponent title="Cadastrar" handleOnPress={handleSignUp} disable={loading} />
+          <ButtonComponent title="Voltar" handleOnPress={handleLoginScreen} />
         </View>
-      </View>
-    </TouchableWithoutFeedback>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
     flex: 1,
-    maxHeight: "65%",
-    width: "95%",
+    backgroundColor: "#f5f5f5",
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    margin: 10,
-    padding: 10,
+  },
+  container: {
+    width: "95%",
+    paddingInline: 5,
+    paddingBlock: 40,
     borderRadius: 15,
     backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  outerContainer: {
-    flex: 1,
-    justifyContent: "center",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
     alignItems: "center",
-    backgroundColor: "#f0f0f0", // Cor de fundo opcional
   },
-
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 30,
   },
-  label: {
-    alignSelf: "flex-start",
-    marginLeft: "8%",
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  input: {
-    width: "90%",
-    height: 55,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingHorizontal: 15,
-    backgroundColor: "#f9f9f9",
-    marginBottom: 15,
-    fontSize: 16,
+  errorText: {
+    color: "red",
+    marginVertical: 10,
+    fontSize: 14,
+    textAlign: "center",
   },
 });

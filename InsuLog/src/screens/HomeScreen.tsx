@@ -66,6 +66,7 @@ export function HomeScreen() {
 
     const message = `
 💉 *Registro de Glicose* 💉
+
 *Glicose*: ${latestDoc.glucose} mg/dL
 *Insulina Utilizada*: ${latestDoc.insulinUsed}
 *Quantidade*: ${latestDoc.insulinAmount} und

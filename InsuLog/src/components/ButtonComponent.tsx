@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     width: "90%",
   },
   buttonDisabled: {
-    backgroundColor: "#d0b1e0",
+    backgroundColor: "#c5c5c5",
   },
   text: {
     color: "#fff",
