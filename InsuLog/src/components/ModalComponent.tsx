@@ -5,9 +5,10 @@ interface PropsModal {
   title: string;
   handleModal: () => void;
   modal: boolean;
+  onShare?: () => void; // Nova prop opcional para compartilhamento
 }
 
-export function ModalComponent({ title, handleModal, modal }: PropsModal) {
+export function ModalComponent({ title, handleModal, modal, onShare }: PropsModal) {
   return (
     <Modal transparent={true} visible={modal} animationType="slide">
       <BlurView intensity={90} tint="dark" style={styles.containerModal}>
@@ -16,6 +17,11 @@ export function ModalComponent({ title, handleModal, modal }: PropsModal) {
           <TouchableOpacity style={styles.button} onPress={handleModal}>
             <Text style={styles.titleButton}>Voltar</Text>
           </TouchableOpacity>
+          {onShare && ( // Exibe o botão apenas se onShare for fornecido
+            <TouchableOpacity style={[styles.button, styles.shareButton]} onPress={onShare}>
+              <Text style={styles.titleButton}>Compartilhar</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </BlurView>
     </Modal>
@@ -54,7 +60,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    marginTop:20,
+    marginTop: 20,
     width: "90%",
     height: 50,
     alignItems: "center",
@@ -67,5 +73,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+
+  shareButton: {
+    backgroundColor: "#25D366", // Cor verde do WhatsApp
   },
 });

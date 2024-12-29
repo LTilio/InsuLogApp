@@ -14,9 +14,9 @@ export function InfoScreen() {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Historico</Text>
       {user?.uid && <GlucoseLogList userId={user.uid} />}
-      <View style={styles.containerbutton}>
-        <ButtonComponent handleOnPress={HandlerAlert} title="Exportar" />
-      </View>
+      {/* <View style={styles.containerbutton}> */}
+      <ButtonComponent handleOnPress={HandlerAlert} title="Exportar" />
+      {/* </View> */}
     </SafeAreaView>
   );
 }
@@ -28,14 +28,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#f5f5f5",
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    
   },
-  containerbutton: {
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    
-  },
+  // containerbutton: {
+  //   width: "100%",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   backgroundColor: 'red'
+
+  // },
   title: {
     paddingTop: 20,
     paddingBottom: 5,
