@@ -180,6 +180,6 @@ const styles = StyleSheet.create({
     fontSize: 18, // Aumentei o tamanho da fonte
   },
   submitButtonDisabled: {
-    backgroundColor: "#d0b1e0", // Cor de fundo mais clara para o estado desabilitado
+    backgroundColor: "#ccc", // Cor de fundo mais clara para o estado desabilitado
   },
 });

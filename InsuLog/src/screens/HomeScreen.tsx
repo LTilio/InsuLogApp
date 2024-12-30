@@ -1,4 +1,13 @@
-import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { useAuthContext } from "../context/AuthContext";
 import { useState } from "react";
 import { useInsertDocument } from "../hooks/useInsertDoument";
@@ -20,7 +29,7 @@ export function HomeScreen() {
   // Usando o hook diretamente dentro do componente
   const { document: latestDoc } = useFetchLatestDoc({
     docCollection: "glucoseLog",
-    userId: user?.uid ?? "", // Garantindo que o userId seja uma string válida
+    userId: user?.uid ?? "",
   });
 
   const handleSubmit = async (
@@ -31,7 +40,7 @@ export function HomeScreen() {
       console.error("Erro: Nome do usuário não encontrado!");
       setModalState(true);
       resetForm();
-      return <ModalComponent handleModal={handleLogin} title="Erro de autenticação" modal={modalState} />;
+      return;
     }
 
     if (user) {
@@ -43,27 +52,22 @@ export function HomeScreen() {
         userName: user?.displayName ?? "sem nome do usuário",
       });
       resetForm();
-      handleNewLogInsert();
-      setModalState(true);
-      setRefreshKey(prevKey => prevKey + 1);
+      setModalState(true); // Abre o modal após o registro
+      setRefreshKey((prevKey) => prevKey + 1); // Força re-renderização da tabela
     } else {
+      console.error("Erro: Usuário não autenticado!");
       setModalState(true);
       resetForm();
-
-      return <ModalComponent handleModal={handleLogin} title="Erro de autenticação" modal={modalState} />;
     }
   };
 
-  const handleNewLogInsert = () => {
-    setRefreshKey(prevKey => prevKey + 1); // Atualiza a chave para forçar re-renderização
-    nav.navigate('TabInfo'); // Navega para a tela Info para forçar a atualização
-  };
+
 
   const handleShare = async () => {
     if (!latestDoc) {
       console.error("Nenhum registro encontrado para compartilhar.");
       setModalState(true);
-      return <ModalComponent handleModal={handleHome} title="Nenhum registro encontrado" modal={modalState} />;
+      return;
     }
 
     const createdAtDate = latestDoc.createdAt?.toDate ? latestDoc.createdAt.toDate() : new Date(latestDoc.createdAt);
@@ -71,6 +75,7 @@ export function HomeScreen() {
     const formattedTime = createdAtDate.toLocaleTimeString("pt-BR", {
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "America/Sao_Paulo",
     });
 
     const message = `
@@ -88,7 +93,6 @@ export function HomeScreen() {
     } catch (error) {
       console.error("Erro ao compartilhar:", error);
       setModalState(true);
-      return <ModalComponent handleModal={handleHome} title="Erro ao compartilhar" modal={modalState} />;
     }
   };
 
@@ -99,14 +103,11 @@ export function HomeScreen() {
 
   const handleHome = () => {
     setModalState(false);
-    nav.navigate("TabInfo");
+    setRefreshKey((prevKey) => prevKey + 1); // Garante a atualização dos dados
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <SafeAreaView style={styles.container}>
           <ScrollView contentContainerStyle={styles.scrollContainer}>

@@ -1,5 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useFetchLatestDoc } from "../hooks/useFetchDocument";
+import { Timestamp } from "firebase/firestore";
 
 interface CardLatestProps {
   userId: string;
@@ -45,15 +46,24 @@ export const CardLatestRegister = ({ userId }: CardLatestProps) => {
 
   const { glucose, createdAt } = document;
 
-  // Usando toDate() para converter o Timestamp diretamente
-  const date = createdAt?.toDate ? createdAt.toDate() : new Date(createdAt);
+  // Verificando se createdAt é um Timestamp e ajustando o fuso horário
+  let formattedDate = "Data indisponível";
+  let formattedTime = "Hora indisponível";
 
-  const formattedDate = date.toLocaleDateString("pt-BR");
-  const formattedTime = date.toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
+  if (createdAt instanceof Timestamp) {
+    const date = createdAt.toDate(); // Converte Timestamp para Date
+    
+    // Usando o método toLocaleDateString e toLocaleTimeString para ajustar o fuso horário
+    formattedDate = date.toLocaleDateString("pt-BR");
+    formattedTime = date.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "America/Sao_Paulo", // Ajustando para o fuso horário de São Paulo (UTC-3)
+    });
+  } else {
+    console.warn("Campo createdAt não é um Timestamp:", createdAt);
+  }
+  
   return (
     <View style={styles.card}>
       <Text style={styles.title}>Ultimo registro</Text>

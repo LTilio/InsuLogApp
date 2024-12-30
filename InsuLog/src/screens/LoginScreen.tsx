@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, SafeAreaView, Platform } from "react-native";
+import { StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, SafeAreaView, Platform, Image } from "react-native";
 import { InputComponent } from "../components/InputComponent";
 import { useState } from "react";
 import { ButtonComponent } from "../components/ButtonComponent";
 import { useAuthContext } from "../context/AuthContext";
 import { Loader } from "../components/Loader";
 import { useNavigation } from "@react-navigation/native";
-
+import logo from "../../assets/InsuLogLogo.png";
 export function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,13 +32,24 @@ export function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.innerContainer}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
+    <KeyboardAvoidingView style={styles.innerContainer} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
-          <Text style={styles.title}>InsuLog</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: 'center',
+              marginBottom:25,
+            }}
+          >
+            <Image source={logo} style={{ width: 70, height: 70, marginRight: -5 }} />
+            <Text style={{ fontSize: 28 }}>
+              Insu  
+              <Text style={{ fontWeight: "bold", fontSize: 30 }}>Log</Text>
+            </Text>
+          </View>
+
           <InputComponent placeHolder="Email" value={email} inputtype={false} handleonChange={setEmail} />
           <InputComponent placeHolder="Senha" value={password} inputtype={true} handleonChange={setPassword} />
           {(inputError || error) && <Text style={styles.errorText}>{inputError || error}</Text>}

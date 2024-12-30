@@ -4,11 +4,11 @@
     "slug": "InsuLog",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/InsuLogLogo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/InsuLogLogo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,13 +18,13 @@
     "android": {
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/InsuLogLogo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.ltilio.InsuLog"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/InsuLogLogo.png"
     },
     "extra": {
       "eas": {

@@ -15,6 +15,7 @@ export const GlucoseLogList = ({ userId }: GlucoseLogListProps) => {
     const formattedTime = date.toLocaleTimeString("pt-BR", {
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "America/Sao_Paulo", // Ajustando para o fuso horário de São Paulo (UTC-3)
     });
 
     return (

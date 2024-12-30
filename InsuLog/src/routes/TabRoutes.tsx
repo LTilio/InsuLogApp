@@ -5,6 +5,8 @@ import { InfoScreen } from "../screens/InfoScreen";
 import { LogoutScreen } from "../screens/LogoutScreen";
 import { Keyboard } from "react-native";
 import { useEffect, useState } from "react";
+import { useAuthContext } from "../context/AuthContext";
+import { HeaderTitleComponent } from "../components/HeaderTitleComponent";
 
 export type RootTabParamsList = {
   TabHomeScreen: undefined;
@@ -17,6 +19,7 @@ const tab = createBottomTabNavigator<RootTabParamsList>();
 
 export function TabRoutes() {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const { user } = useAuthContext();
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
@@ -59,6 +62,7 @@ export function TabRoutes() {
         name="TabHomeScreen"
         component={HomeScreen}
         options={{
+          headerTitle: () => <HeaderTitleComponent userName={user?.displayName || "Nome do Usuário"} />,
           tabBarIcon: () => <Feather name="home" size={35} color="black" />,
           title: "Home",
         }}
@@ -67,6 +71,7 @@ export function TabRoutes() {
         name="TabInfo"
         component={InfoScreen}
         options={{
+          headerTitle: () => <HeaderTitleComponent userName={"Historico"} />,
           tabBarIcon: () => <Feather name="alert-circle" size={35} color="black" />,
           title: "Historico",
         }}

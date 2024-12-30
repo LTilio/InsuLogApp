@@ -3,6 +3,7 @@ import { useAuthContext } from "../context/AuthContext";
 import { AppUser } from "../@types/fireStore";
 import {
   Button,
+  Image,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -19,7 +20,7 @@ import { InputComponent } from "../components/InputComponent";
 import { ButtonComponent } from "../components/ButtonComponent";
 import { Loader } from "../components/Loader";
 import { useNavigation } from "@react-navigation/native";
-
+import logo from "../../assets/InsuLogLogo.png";
 export function SignUpScreen() {
   const { signUp, loading, error } = useAuthContext();
 
@@ -55,7 +56,21 @@ export function SignUpScreen() {
     <KeyboardAvoidingView style={styles.outerContainer} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
-          <Text style={styles.title}>CADASTRO</Text>
+          <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: 'center',
+                        marginBottom:25,
+                      }}
+                    >
+                      <Image source={logo} style={{ width: 70, height: 70, marginRight: -5 }} />
+                      <Text style={{ fontSize: 28 }}>
+                        Insu  
+                        <Text style={{ fontWeight: "bold", fontSize: 30 }}>Log</Text>
+                      </Text>
+                    </View>
+          {/* <Text style={styles.title}>Cadastro:</Text> */}
           <InputComponent
             placeHolder="Nome de exibição"
             value={displayName}
@@ -98,11 +113,13 @@ const styles = StyleSheet.create({
     elevation: 3,
     alignItems: "center",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 30,
-  },
+  // title: {
+  //   fontSize: 20,
+  //   fontWeight: "bold",
+  //   marginBottom: 10,
+  //   alignSelf: 'flex-start',
+  //   paddingLeft: 20,
+  // },
   errorText: {
     color: "red",
     marginVertical: 10,

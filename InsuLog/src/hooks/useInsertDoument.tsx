@@ -41,7 +41,8 @@ export const useInsertDocument = (docCollection: string) => {
     await minLoaderTime(1000);
 
     try {
-      const newDocument = { ...doc, createdAt: Timestamp.now() };
+      const localDate = new Date(); // Gera a data no fuso horário local
+      const newDocument = { ...doc, createdAt: Timestamp.fromDate(localDate) };
       const insertedDocument = await addDoc(collection(db, docCollection), newDocument);
       dispatch({ type: "INSERTED", payload: insertedDocument });
     } catch (error) {
