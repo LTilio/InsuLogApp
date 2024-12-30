@@ -14,12 +14,11 @@ export function InfoScreen() {
   useEffect(() => {
     const unsubscribe = nav.addListener("focus", () => {
       // Sempre que a tela for focada, incrementa o refreshKey para forçar a re-renderização
-      setRefreshKey(prevKey => prevKey + 1);
+      setRefreshKey((prevKey) => prevKey + 1);
     });
 
     return unsubscribe; // Limpa o listener quando a tela for desmontada
   }, [nav]);
-
 
   const HandlerAlert = () => {
     alert("Em construção");
@@ -27,11 +26,9 @@ export function InfoScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Historico</Text>
       {user?.uid && <GlucoseLogList key={refreshKey} userId={user.uid} />}
-      {/* <View style={styles.containerbutton}> */}
+
       <ButtonComponent handleOnPress={HandlerAlert} title="Exportar" />
-      {/* </View> */}
     </SafeAreaView>
   );
 }
@@ -42,17 +39,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f5f5f5",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    marginTop: 15,
   },
-  // containerbutton: {
-  //   width: "100%",
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   backgroundColor: 'red'
 
-  // },
   title: {
-    paddingTop: 20,
     paddingBottom: 5,
     fontSize: 24,
     fontWeight: "bold",

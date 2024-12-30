@@ -36,12 +36,9 @@ export function TabRoutes() {
     <tab.Navigator
       initialRouteName="TabHomeScreen"
       screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: false,
+        headerShown: true,
         tabBarStyle: {
           display: isKeyboardVisible ? "none" : "flex",
-          // position: "absolute", // Fixa a TabBar na parte inferior
-          // bottom: 0, // Garantir que a TabBar fique fixa na parte inferior
           height: 80,
           borderTopWidth: 0,
           elevation: 0,
@@ -71,7 +68,7 @@ export function TabRoutes() {
         component={InfoScreen}
         options={{
           tabBarIcon: () => <Feather name="alert-circle" size={35} color="black" />,
-          title: "Info",
+          title: "Historico",
         }}
       />
       <tab.Screen

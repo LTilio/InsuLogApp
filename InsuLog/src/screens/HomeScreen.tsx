@@ -1,4 +1,4 @@
-import { Keyboard, SafeAreaView, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import { useAuthContext } from "../context/AuthContext";
 import { useState } from "react";
 import { useInsertDocument } from "../hooks/useInsertDoument";
@@ -103,53 +103,51 @@ export function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-        {user?.uid && (
-          <View style={styles.cardWrapper}>
-            <CardLatestRegister key={refreshKey} userId={user?.uid} />
-          </View>
-        )}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView style={styles.container}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            {user?.uid && (
+              <View style={styles.cardWrapper}>
+                <CardLatestRegister key={refreshKey} userId={user?.uid} />
+              </View>
+            )}
 
-        {modalState && (
-          <ModalComponent
-            handleModal={handleHome}
-            title="Informações registradas"
-            modal={modalState}
-            onShare={handleShare}
-          />
-        )}
-        {state.loading && <Loader />}
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.formWrapper}>
-            <GlucoseForm loading={state.loading} handleSubmitForm={handleSubmit} />
-          </View>
-        </TouchableWithoutFeedback>
-      </ScrollView>
-    </SafeAreaView>
+            {modalState && (
+              <ModalComponent
+                handleModal={handleHome}
+                title="Informações registradas"
+                modal={modalState}
+                onShare={handleShare}
+              />
+            )}
+            {state.loading && <Loader />}
+            <View style={styles.formWrapper}>
+              <GlucoseForm loading={state.loading} handleSubmitForm={handleSubmit} />
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    justifyContent: "center",
   },
   scrollContainer: {
-    flexGrow: 1,
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
   },
   cardWrapper: {
-    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 15,
-    width: "100%",
   },
   formWrapper: {
-    justifyContent: "center",
     alignItems: "center",
-    width: "100%",
   },
 });

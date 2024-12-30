@@ -52,7 +52,7 @@ export function SignUpScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.outerContainer} behavior="padding">
+    <KeyboardAvoidingView style={styles.outerContainer} behavior={Platform.OS === "ios" ? "padding" : "height"}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           <Text style={styles.title}>CADASTRO</Text>
@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
     backgroundColor: "#f5f5f5",
+    marginBlock: 50,
   },
   scrollContainer: {
     flexGrow: 1,

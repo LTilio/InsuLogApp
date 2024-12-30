@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, KeyboardAvoidingView } from "react-native";
+import { StyleSheet, Text, View, ScrollView, KeyboardAvoidingView, SafeAreaView, Platform } from "react-native";
 import { InputComponent } from "../components/InputComponent";
 import { useState } from "react";
 import { ButtonComponent } from "../components/ButtonComponent";
@@ -32,7 +32,10 @@ export function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.outerContainer} behavior="padding">
+    <KeyboardAvoidingView
+      style={styles.innerContainer}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.container}>
           <Text style={styles.title}>InsuLog</Text>
@@ -52,6 +55,10 @@ const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
     backgroundColor: "#f5f5f5",
+  },
+  innerContainer: {
+    flex: 1,
+    marginBlock: 75,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -78,7 +85,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    marginVertical: 10,
     fontSize: 14,
     textAlign: "center",
   },
