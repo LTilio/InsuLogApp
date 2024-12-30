@@ -14,12 +14,14 @@ export function HomeScreen() {
   const { user } = useAuthContext();
   const [modalState, setModalState] = useState<boolean>(false);
   const { insertDocument, state } = useInsertDocument("glucoseLog");
+  const [refreshKey, setRefreshKey] = useState(0);
   const nav = useNavigation();
 
-  const latestDocResult = user?.uid
-    ? useFetchLatestDoc("glucoseLog", user.uid)
-    : { document: null, loading: false, error: null };
-  const { document: latestDoc } = latestDocResult;
+  // Usando o hook diretamente dentro do componente
+  const { document: latestDoc } = useFetchLatestDoc({
+    docCollection: "glucoseLog",
+    userId: user?.uid ?? "", // Garantindo que o userId seja uma string válida
+  });
 
   const handleSubmit = async (
     data: { glucose: number; insulinUsed: string; insulinAmount: number },
@@ -41,13 +43,20 @@ export function HomeScreen() {
         userName: user?.displayName ?? "sem nome do usuário",
       });
       resetForm();
+      handleNewLogInsert();
       setModalState(true);
+      setRefreshKey(prevKey => prevKey + 1);
     } else {
       setModalState(true);
       resetForm();
 
       return <ModalComponent handleModal={handleLogin} title="Erro de autenticação" modal={modalState} />;
     }
+  };
+
+  const handleNewLogInsert = () => {
+    setRefreshKey(prevKey => prevKey + 1); // Atualiza a chave para forçar re-renderização
+    nav.navigate('TabInfo'); // Navega para a tela Info para forçar a atualização
   };
 
   const handleShare = async () => {
@@ -98,7 +107,7 @@ export function HomeScreen() {
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
         {user?.uid && (
           <View style={styles.cardWrapper}>
-            <CardLatestRegister userId={user.uid} />
+            <CardLatestRegister key={refreshKey} userId={user?.uid} />
           </View>
         )}
 
@@ -125,10 +134,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
-    paddingTop: 50,
   },
   scrollContainer: {
     flexGrow: 1,
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },

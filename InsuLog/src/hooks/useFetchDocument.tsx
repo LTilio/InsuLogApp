@@ -1,69 +1,51 @@
 import { useEffect, useState } from "react";
 import { GlucoseLog } from "../@types/fireStore";
-import {
-  collection,
-  DocumentData,
-  getDocs,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-  QuerySnapshot,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, limit, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { db } from "../fireBase/Config";
-import { useAuth } from "./useAuth";
-import { useAuthContext } from "../context/AuthContext";
 
-export const useFetchLatestDoc = (docCollection: string, userId: string) => {
+interface UseFetchDocumentProps {
+  docCollection: string;
+  userId: string;
+}
+
+export function useFetchLatestDoc({ docCollection, userId }: UseFetchDocumentProps) {
   const [document, setDocument] = useState<GlucoseLog | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const{user}= useAuthContext();
 
   useEffect(() => {
-    // Evitar execução se userId não estiver disponível
     if (!userId) return;
-    if (!user) return;
-    // Função para carregar o documento mais recente
-    const loadLatestDoc = () => {
-      
-      const docQuery = query(
-        collection(db, docCollection),
-        where("userId", "==", userId),
-        orderBy("createdAt", "desc"),
-        limit(1)
-      );
 
-      // Iniciar o snapshot listener
-      const unsubscribe = onSnapshot(
-        docQuery,
-        (snapshot: QuerySnapshot<DocumentData>) => {
-          if (!snapshot.empty) {
-            const docData = snapshot.docs[0].data() as GlucoseLog;
-            setDocument(docData); // Atualizar o estado com o último documento
-          } else {
-            setDocument(null); // Nenhum documento encontrado
-          }
-          setLoading(false); // Finalizar o estado de carregamento
-        },
-        (error) => {
-          console.error("Erro ao buscar o documento:", error);
-          setError("Erro ao buscar o documento");
-          setLoading(false); // Finalizar o estado de carregamento em caso de erro
+    // Prepara a consulta
+    const docQuery = query(
+      collection(db, docCollection),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc"),
+      limit(1)
+    );
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const querySnapshot = await getDocs(docQuery);
+
+        if (!querySnapshot.empty) {
+          const docData = querySnapshot.docs[0].data() as GlucoseLog;
+          setDocument(docData);
+        } else {
+          setDocument(null); // Caso não haja nenhum documento
         }
-      );
-
-      // Limpeza: desinscrever listener quando o componente desmontar
-      return unsubscribe;
+        setLoading(false);
+      } catch (err) {
+        setError("Erro ao buscar o documento");
+        setLoading(false);
+      }
     };
 
-    // Chama a função para carregar o documento mais recente
-    const unsubscribe = loadLatestDoc();
+    fetchData(); // Executa a busca
 
-    // Limpeza no retorno do useEffect
-    return () => unsubscribe();
-  }, [docCollection, userId]); // Dependências para quando a coleção ou userId mudarem
+    // Não é necessário limpar a inscrição, pois estamos usando um método pontual
+  }, [userId, docCollection]);
 
   return { document, loading, error };
-};
+}

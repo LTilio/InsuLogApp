@@ -1,12 +1,15 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useFetchLatestDoc } from "../hooks/useFetchDocument";
 
-interface cardLatest {
+interface CardLatestProps {
   userId: string;
 }
 
-export const CardLatestRegister = ({ userId }: cardLatest) => {
-  const { document, loading, error } = useFetchLatestDoc("glucoseLog", userId);
+export const CardLatestRegister = ({ userId }: CardLatestProps) => {
+  const { document, loading, error } = useFetchLatestDoc({
+    docCollection: "glucoseLog",
+    userId,
+  });
 
   if (!userId) {
     return (

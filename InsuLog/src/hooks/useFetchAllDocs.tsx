@@ -3,13 +3,12 @@ import { GlucoseLog } from "../@types/fireStore";
 import {
   collection,
   DocumentData,
-  onSnapshot,
   orderBy,
   query,
-  QuerySnapshot,
   where,
   limit,
   startAfter,
+  getDocs,
 } from "firebase/firestore";
 import { db } from "../fireBase/Config";
 import { useAuthContext } from "../context/AuthContext";
@@ -23,21 +22,22 @@ export const useFetchAllDocs = (docCollection: string, userId: string, pageSize:
   const { user } = useAuthContext();
 
   useEffect(() => {
-    // Se não houver userId, desinscreve o listener
-    if (!userId) return;
-    if (!user) return;
-    // Cria a consulta inicial para buscar os primeiros documentos
-    const initialQuery = query(
-      collection(db, docCollection),
-      where("userId", "==", userId),
-      orderBy("createdAt", "desc"),
-      limit(pageSize)
-    );
+    if (!userId || !user) return;
 
-    // Configura um listener em tempo real usando onSnapshot
-    const unsubscribe = onSnapshot(
-      initialQuery,
-      (snapshot: QuerySnapshot<DocumentData>) => {
+    const fetchDocuments = async () => {
+      try {
+        setLoading(true);
+        // Cria a consulta inicial
+        const initialQuery = query(
+          collection(db, docCollection),
+          where("userId", "==", userId),
+          orderBy("createdAt", "desc"),
+          limit(pageSize)
+        );
+
+        // Chama getDocs para buscar os documentos uma vez
+        const snapshot = await getDocs(initialQuery);
+
         if (!snapshot.empty) {
           const docs = snapshot.docs.map((doc) => doc.data() as GlucoseLog);
           setDocuments(docs);
@@ -47,55 +47,52 @@ export const useFetchAllDocs = (docCollection: string, userId: string, pageSize:
           setHasMore(false);
         }
         setLoading(false);
-      },
-      (error) => {
+      } catch (error) {
         console.error("Erro ao buscar documentos:", error);
         setError("Erro ao buscar documentos");
         setLoading(false);
       }
-    );
+    };
+
+    fetchDocuments();
 
     // Função de limpeza ao desmontar ou ao mudar o userId
     return () => {
-      unsubscribe();
-      setDocuments([]); // Limpa os documentos ao fazer logout ou ao mudar o userId
-      setLastDoc(null); // Limpa o lastDoc ao fazer logout
-      setHasMore(true); // Reseta o estado de "hasMore"
+      setDocuments([]);
+      setLastDoc(null);
+      setHasMore(true);
     };
-  }, [docCollection, userId, pageSize]); // Quando userId mudar, reexecuta o useEffect
+  }, [docCollection, userId, pageSize, user]); // Quando userId ou user mudar, reexecuta o useEffect
 
-  const fetchMoreDocs = () => {
+  const fetchMoreDocs = async () => {
     if (!userId || !lastDoc || !hasMore || loading) return;
-    if (!user) return;
-    setLoading(true);
 
-    const nextQuery = query(
-      collection(db, docCollection),
-      where("userId", "==", userId),
-      orderBy("createdAt", "desc"),
-      startAfter(lastDoc),
-      limit(pageSize)
-    );
+    try {
+      setLoading(true);
+      const nextQuery = query(
+        collection(db, docCollection),
+        where("userId", "==", userId),
+        orderBy("createdAt", "desc"),
+        startAfter(lastDoc),
+        limit(pageSize)
+      );
 
-    onSnapshot(
-      nextQuery,
-      (snapshot: QuerySnapshot<DocumentData>) => {
-        if (!snapshot.empty) {
-          const newDocs = snapshot.docs.map((doc) => doc.data() as GlucoseLog);
-          setDocuments((prevDocs) => [...prevDocs, ...newDocs]);
-          setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
-          setHasMore(newDocs.length === pageSize);
-        } else {
-          setHasMore(false);
-        }
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Erro ao buscar mais documentos:", error);
-        setError("Erro ao buscar mais documentos");
-        setLoading(false);
+      const snapshot = await getDocs(nextQuery);
+
+      if (!snapshot.empty) {
+        const newDocs = snapshot.docs.map((doc) => doc.data() as GlucoseLog);
+        setDocuments((prevDocs) => [...prevDocs, ...newDocs]);
+        setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+        setHasMore(newDocs.length === pageSize);
+      } else {
+        setHasMore(false);
       }
-    );
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar mais documentos:", error);
+      setError("Erro ao buscar mais documentos");
+      setLoading(false);
+    }
   };
 
   return { documents, loading, error, fetchMoreDocs, hasMore };
