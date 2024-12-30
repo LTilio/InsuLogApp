@@ -12,13 +12,17 @@ const schema = yup.object().shape({
     .max(1000, "O valor deve ser menor que 1000")
     .positive("Menor numero é 0"),
 
-  insulinUsed: yup.string().required("Selecione uma opção").oneOf(["Rápida", "Lenta"], "Tipo inválido"),
+  insulinUsed: yup
+    .string()
+    .required("Selecione uma opção")
+    .oneOf(["Rápida", "Lenta", "Não ultilizada"], "Tipo inválido"),
 
   insulinAmount: yup
     .number()
     .required("Campo obrigatorio")
     .max(100.0, "O valor maximo é de 100.0")
-    .positive("Menor numero é 0"),
+    .min(0, "Menor numero é 0")
+    .typeError("Valor inválido")
 });
 
 interface FormProps {
@@ -31,6 +35,7 @@ export function GlucoseForm({ handleSubmitForm, loading }: FormProps) {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({ resolver: yupResolver(schema) });
 
@@ -64,12 +69,18 @@ export function GlucoseForm({ handleSubmitForm, loading }: FormProps) {
           <View style={[styles.pickerContainer, errors.insulinUsed && styles.inputError]}>
             <Picker
               selectedValue={value}
-              onValueChange={(v) => onChange(v)}
+              onValueChange={(v) => {
+                onChange(v);
+                if (v === "Não ultilizada") {
+                  setValue("insulinAmount", 0);
+                }
+              }}
               style={[styles.picker, errors.insulinUsed && styles.inputErrorText]}
             >
               <Picker.Item label="Selecione um tipo" value="" />
               <Picker.Item label="Rápida" value="Rápida" />
               <Picker.Item label="Lenta" value="Lenta" />
+              <Picker.Item label="Não ultilizada" value="Não ultilizada" />
             </Picker>
           </View>
         )}
@@ -85,8 +96,12 @@ export function GlucoseForm({ handleSubmitForm, loading }: FormProps) {
             style={[styles.input, errors.insulinAmount && styles.inputError]}
             placeholder={errors.insulinAmount ? errors.insulinAmount.message : "Quantidade de insulina usada"}
             value={value?.toString() || ""}
-            onChangeText={(v) => onChange(v ? parseFloat(v) : null)}
-            keyboardType="numeric"
+            onChangeText={(v) => {
+              // Permite apenas números e o ponto, e o parseFloat irá funcionar corretamente
+              const formattedValue = v.replace(/[^0-9.]/g, ''); // Remove caracteres não numéricos, exceto o ponto
+              onChange(formattedValue);
+            }}
+            keyboardType="decimal-pad"
             placeholderTextColor={errors.insulinAmount ? "#dc3554" : "#888"} // Cor do placeholder
           />
         )}
@@ -110,7 +125,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#d6b4f0", // Fundo lilás pastel
+    // backgroundColor: "#d6b4f0", // Fundo lilás pastel
   },
   formContainer: {
     width: "90%",

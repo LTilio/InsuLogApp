@@ -52,16 +52,14 @@ export function HomeScreen() {
         userName: user?.displayName ?? "sem nome do usuário",
       });
       resetForm();
-      setModalState(true); // Abre o modal após o registro
       setRefreshKey((prevKey) => prevKey + 1); // Força re-renderização da tabela
+      setModalState(true); // Abre o modal após o registro
     } else {
       console.error("Erro: Usuário não autenticado!");
       setModalState(true);
       resetForm();
     }
   };
-
-
 
   const handleShare = async () => {
     if (!latestDoc) {
@@ -107,10 +105,18 @@ export function HomeScreen() {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 100}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <SafeAreaView style={styles.container}>
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false} // Desabilita o indicador de rolagem (opcional)
+          >
             {user?.uid && (
               <View style={styles.cardWrapper}>
                 <CardLatestRegister key={refreshKey} userId={user?.uid} />
@@ -125,7 +131,9 @@ export function HomeScreen() {
                 onShare={handleShare}
               />
             )}
+
             {state.loading && <Loader />}
+
             <View style={styles.formWrapper}>
               <GlucoseForm loading={state.loading} handleSubmitForm={handleSubmit} />
             </View>
@@ -142,8 +150,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   scrollContainer: {
-    flex: 1,
-    justifyContent: "center",
+    flexGrow: 1, // Garante que o conteúdo ocupe toda a altura disponível
+    justifyContent: "center", // Ajuste o alinhamento conforme necessário
   },
   cardWrapper: {
     alignItems: "center",
