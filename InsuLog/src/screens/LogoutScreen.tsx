@@ -1,18 +1,16 @@
 import { useEffect } from "react";
-import { Loader } from "../components/Loader";
 import { useAuthContext } from "../context/AuthContext";
-import { useNavigation } from "@react-navigation/native";
 
 export function LogoutScreen() {
   const { logOut } = useAuthContext();
 
   useEffect(() => {
     const handleLogout = async () => {
-      await logOut();
+      await logOut(); // Realiza o logout e limpa o estado do usuário
     };
 
     handleLogout();
-  }, []);
+  }, [logOut]);
 
-  return <Loader />;
+  return null;
 }

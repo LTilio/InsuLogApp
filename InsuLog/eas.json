@@ -15,8 +15,7 @@
         "EXPO_PUBLIC_INSULOG_STORAGE_BUCKET": "EXPO_PUBLIC_INSULOG_STORAGE_BUCKET",
         "EXPO_PUBLIC_INSULOG_MESSAGING_SENDER_ID": "EXPO_PUBLIC_INSULOG_MESSAGING_SENDER_ID",
         "EXPO_PUBLIC_INSULOG_APP_ID": "EXPO_PUBLIC_INSULOG_APP_ID"
-      },
-      "channel": "development"
+      }
     },
     "preview": {
       "autoIncrement": true,
@@ -31,8 +30,7 @@
         "EXPO_PUBLIC_INSULOG_STORAGE_BUCKET": "EXPO_PUBLIC_INSULOG_STORAGE_BUCKET",
         "EXPO_PUBLIC_INSULOG_MESSAGING_SENDER_ID": "EXPO_PUBLIC_INSULOG_MESSAGING_SENDER_ID",
         "EXPO_PUBLIC_INSULOG_APP_ID": "EXPO_PUBLIC_INSULOG_APP_ID"
-      },
-      "channel": "preview"
+      }
     },
     "production": {
       "autoIncrement": true,
@@ -43,8 +41,7 @@
         "EXPO_PUBLIC_INSULOG_STORAGE_BUCKET": "EXPO_PUBLIC_INSULOG_STORAGE_BUCKET",
         "EXPO_PUBLIC_INSULOG_MESSAGING_SENDER_ID": "EXPO_PUBLIC_INSULOG_MESSAGING_SENDER_ID",
         "EXPO_PUBLIC_INSULOG_APP_ID": "EXPO_PUBLIC_INSULOG_APP_ID"
-      },
-      "channel": "production"
+      }
     }
   },
   "submit": {
