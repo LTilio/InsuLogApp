@@ -22,7 +22,7 @@ const schema = yup.object().shape({
     .required("Campo obrigatorio")
     .max(100.0, "O valor maximo é de 100.0")
     .min(0, "Menor numero é 0")
-    .typeError("Valor inválido")
+    .typeError("Valor inválido"),
 });
 
 interface FormProps {
@@ -54,9 +54,12 @@ export function GlucoseForm({ handleSubmitForm, loading }: FormProps) {
             style={[styles.input, errors.glucose && styles.inputError]}
             placeholder={errors.glucose ? errors.glucose.message : "Valor da Glicose"}
             value={value?.toString() || ""}
-            onChangeText={(v) => onChange(v ? parseFloat(v) : null)}
+            onChangeText={(v) => {
+              const formattedValue = v.replace(/[^0-9]/g, "");
+              onChange(formattedValue);
+            }}
             keyboardType="numeric"
-            placeholderTextColor={errors.glucose ? "#dc3554" : "#888"} // Cor do placeholder
+            placeholderTextColor={errors.glucose ? "#dc3554" : "#888"}
           />
         )}
       />
@@ -85,7 +88,6 @@ export function GlucoseForm({ handleSubmitForm, loading }: FormProps) {
           </View>
         )}
       />
-      {/* {errors.insulinUsed && <Text style={styles.errorText}>{errors.insulinUsed.message}</Text>} */}
 
       <Text style={styles.label}>Quantidade:</Text>
       <Controller
@@ -97,18 +99,15 @@ export function GlucoseForm({ handleSubmitForm, loading }: FormProps) {
             placeholder={errors.insulinAmount ? errors.insulinAmount.message : "Quantidade de insulina usada"}
             value={value?.toString() || ""}
             onChangeText={(v) => {
-              // Permite apenas números e o ponto, e o parseFloat irá funcionar corretamente
-              const formattedValue = v.replace(/[^0-9.]/g, ''); // Remove caracteres não numéricos, exceto o ponto
+              const formattedValue = v.replace(/[^0-9.]/g, "");
               onChange(formattedValue);
             }}
             keyboardType="decimal-pad"
-            placeholderTextColor={errors.insulinAmount ? "#dc3554" : "#888"} // Cor do placeholder
+            placeholderTextColor={errors.insulinAmount ? "#dc3554" : "#888"}
           />
         )}
       />
-      {/* {errors.insulinAmount && <Text style={styles.errorText}>{errors.insulinAmount.message}</Text>} */}
 
-      {/* Botão estilizado */}
       <TouchableOpacity
         onPress={handleSubmit(onSubmit)}
         disabled={loading}
@@ -125,7 +124,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "#d6b4f0", // Fundo lilás pastel
   },
   formContainer: {
     width: "90%",
@@ -147,17 +145,17 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "100%",
-    height: 55, // Aumentei a altura
+    height: 55,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "#ccc",
     paddingHorizontal: 15,
     backgroundColor: "#f9f9f9",
     marginBottom: 15,
-    fontSize: 16, // Aumentei o tamanho da fonte
+    fontSize: 16,
   },
   inputError: {
-    borderColor: "#dc3554", // Bordas vermelhas para erro
+    borderColor: "#dc3554",
   },
   pickerContainer: {
     width: "100%",
@@ -169,32 +167,32 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   picker: {
-    height: 55, // Aumentei a altura do Picker
+    height: 55,
     paddingHorizontal: 15,
-    fontSize: 16, // Aumentei o tamanho da fonte
+    fontSize: 16,
   },
   inputErrorText: {
-    color: "#dc3554", // Texto do Picker em vermelho no erro
+    color: "#dc3554",
   },
   errorText: {
-    color: "#dc3554", // Vermelho pastel escolhido para erro
-    fontSize: 14, // Aumentei o tamanho da fonte
+    color: "#dc3554",
+    fontSize: 14,
     marginBottom: 10,
   },
   submitButton: {
     marginTop: 20,
     paddingVertical: 12,
     borderRadius: 10,
-    backgroundColor: "#000", // Cor de fundo para o botão
+    backgroundColor: "#000",
     alignItems: "center",
     width: "100%",
   },
   submitButtonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 18, // Aumentei o tamanho da fonte
+    fontSize: 18,
   },
   submitButtonDisabled: {
-    backgroundColor: "#ccc", // Cor de fundo mais clara para o estado desabilitado
+    backgroundColor: "#ccc",
   },
 });

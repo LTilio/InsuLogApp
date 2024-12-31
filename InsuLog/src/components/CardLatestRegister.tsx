@@ -96,7 +96,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     alignItems: "center",
-    margin: 10,
+    marginBottom: 10,
+    marginTop: 15,
     width: "90%",
   },
   title: {

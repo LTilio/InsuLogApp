@@ -18,15 +18,20 @@ import { GlucoseForm } from "../components/GlucoseForm";
 import { CardLatestRegister } from "../components/CardLatestRegister";
 import { Share } from "react-native";
 import { useFetchLatestDoc } from "../hooks/useFetchDocument";
+import { GlucoseLog } from "../@types/fireStore";
 
 export function HomeScreen() {
   const { user } = useAuthContext();
-  const [modalState, setModalState] = useState<boolean>(false);
+  const [modalState, setModalState] = useState<{
+    visible: boolean;
+    title: string;
+    type: "success" | "error";
+  }>({ visible: false, title: "", type: "success" });
   const { insertDocument, state } = useInsertDocument("glucoseLog");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [newDocToShare, setNewDocToShare] = useState<GlucoseLog | null>();
   const nav = useNavigation();
 
-  // Usando o hook diretamente dentro do componente
   const { document: latestDoc } = useFetchLatestDoc({
     docCollection: "glucoseLog",
     userId: user?.uid ?? "",
@@ -38,37 +43,59 @@ export function HomeScreen() {
   ) => {
     if (!user?.displayName) {
       console.error("Erro: Nome do usuário não encontrado!");
-      setModalState(true);
+      setModalState({
+        visible: true,
+        title: "Erro: Nome do usuário não encontrado!",
+        type: "error",
+      });
       resetForm();
       return;
     }
 
     if (user) {
-      await insertDocument({
+      const newDocument = {
         glucose: data.glucose,
         insulinUsed: data.insulinUsed,
         insulinAmount: data.insulinAmount,
         userId: user?.uid,
         userName: user?.displayName ?? "sem nome do usuário",
-      });
+      };
+      await insertDocument(newDocument);
+      setNewDocToShare({ ...newDocument, createdAt: new Date() });
       resetForm();
-      setRefreshKey((prevKey) => prevKey + 1); // Força re-renderização da tabela
-      setModalState(true); // Abre o modal após o registro
+      setRefreshKey((prevKey) => prevKey + 1);
+      setModalState({
+        visible: true,
+        title: "Informações registradas",
+        type: "success",
+      });
     } else {
       console.error("Erro: Usuário não autenticado!");
-      setModalState(true);
+      setModalState({
+        visible: true,
+        title: "Erro: Usuário não autenticado!",
+        type: "error",
+      });
       resetForm();
     }
   };
 
   const handleShare = async () => {
-    if (!latestDoc) {
+    const docToShare = newDocToShare || latestDoc;
+
+    if (!docToShare) {
       console.error("Nenhum registro encontrado para compartilhar.");
-      setModalState(true);
+      setModalState({
+        visible: true,
+        title: "Erro: Nenhum registro encontrado!",
+        type: "error",
+      });
       return;
     }
 
-    const createdAtDate = latestDoc.createdAt?.toDate ? latestDoc.createdAt.toDate() : new Date(latestDoc.createdAt);
+    const createdAtDate =
+      docToShare.createdAt instanceof Date ? docToShare.createdAt : new Date(docToShare.createdAt || Date.now());
+
     const formattedDate = createdAtDate.toLocaleDateString("pt-BR");
     const formattedTime = createdAtDate.toLocaleTimeString("pt-BR", {
       hour: "2-digit",
@@ -79,29 +106,30 @@ export function HomeScreen() {
     const message = `
 💉 *Registro de Glicose* 💉
 
-*Glicose*: ${latestDoc.glucose} mg/dL
-*Insulina Utilizada*: ${latestDoc.insulinUsed}
-*Quantidade*: ${latestDoc.insulinAmount} und
+*Glicose*: ${docToShare.glucose} mg/dL
+*Insulina Utilizada*: ${docToShare.insulinUsed}
+*Quantidade*: ${docToShare.insulinAmount} und
 *Data*: ${formattedDate}
 *Hora*: ${formattedTime}
 `.trim();
 
     try {
       await Share.share({ message });
+      setNewDocToShare(null);
     } catch (error) {
       console.error("Erro ao compartilhar:", error);
-      setModalState(true);
+      setModalState({
+        visible: true,
+        title: "Erro ao compartilhar...",
+        type: "error",
+      });
     }
   };
 
-  const handleLogin = () => {
-    setModalState(false);
-    nav.navigate("TabLogout");
-  };
-
   const handleHome = () => {
-    setModalState(false);
-    setRefreshKey((prevKey) => prevKey + 1); // Garante a atualização dos dados
+    setModalState({ visible: false, title: "", type: "success" });
+    setNewDocToShare(null);
+    setRefreshKey((prevKey) => prevKey + 1);
   };
 
   return (
@@ -115,7 +143,7 @@ export function HomeScreen() {
           <ScrollView
             contentContainerStyle={styles.scrollContainer}
             keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false} // Desabilita o indicador de rolagem (opcional)
+            showsVerticalScrollIndicator={false}
           >
             {user?.uid && (
               <View style={styles.cardWrapper}>
@@ -123,12 +151,12 @@ export function HomeScreen() {
               </View>
             )}
 
-            {modalState && (
+            {modalState.visible && (
               <ModalComponent
                 handleModal={handleHome}
-                title="Informações registradas"
-                modal={modalState}
-                onShare={handleShare}
+                title={modalState.title}
+                modal={modalState.visible}
+                onShare={modalState.type === "success" ? handleShare : undefined} // Botão de compartilhar apenas no sucesso
               />
             )}
 
@@ -150,8 +178,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   scrollContainer: {
-    flexGrow: 1, // Garante que o conteúdo ocupe toda a altura disponível
-    justifyContent: "center", // Ajuste o alinhamento conforme necessário
+    flexGrow: 1,
+    justifyContent: "center",
   },
   cardWrapper: {
     alignItems: "center",

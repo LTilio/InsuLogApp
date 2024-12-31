@@ -94,7 +94,6 @@ export function TabRoutes() {
           tabBarIcon: () => (
             <TouchableOpacity style={{ justifyContent: "center", alignItems: "center" }} onPress={handleLogout}>
               <Feather name="log-out" size={35} color="black" />
-              <Text style={{ fontSize: 12, color: "black" }}>Sair</Text>
             </TouchableOpacity>
           ),
           title: "Sair",
