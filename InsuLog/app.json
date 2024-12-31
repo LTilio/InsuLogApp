@@ -4,7 +4,7 @@
     "slug": "InsuLog",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/InsuLogLogo.png",
+    "icon": "./assets/InsuLogLogoApp01.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -18,7 +18,7 @@
     "android": {
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/InsuLogLogoApp.png",
+        "foregroundImage": "./assets/InsuLogLogoApp01.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.ltilio.InsuLog"

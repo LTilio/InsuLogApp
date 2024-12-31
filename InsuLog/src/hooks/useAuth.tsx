@@ -134,23 +134,18 @@ export const useAuth = () => {
     }
   };
 
-  // Logout
-  const logOut = async () => {
-    dispatch({ type: "LOADING" });
+// Logout
+const logOut = async () => {
+  dispatch({ type: "LOADING" });
 
-    try {
-      if (auth.currentUser) {
-        await minLoaderTime(1500);
-        await signOut(auth); // Realiza o logout do Firebase
-        dispatch({ type: "LOGOUT" });
-        await removeUserFromStorage();
-      } else {
-        dispatch({ type: "LOGOUT" });
-      }
-    } catch (error: any) {
-      dispatch({ type: "ERROR", payload: `Erro ao deslogar: ${error.message}` });
-    }
-  };
+  try {
+    await minLoaderTime(1500); // Exibe o loader por 1.5s
+    await removeUserFromStorage(); // Limpa os dados armazenados no AsyncStorage ou SecureStore
+    dispatch({ type: "LOGOUT" }); // Reseta o estado do contexto (user: null)
+  } catch (error: any) {
+    dispatch({ type: "ERROR", payload: `Erro ao deslogar: ${error.message}` });
+  }
+};
 
   return { signIn, signUp, logOut, state };
 };
